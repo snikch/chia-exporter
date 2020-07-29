@@ -18,13 +18,23 @@ class ChiaCollector(object):
         # Connection Failure: "Connection error. Check if full node is running at None"
         netspace = subprocess.run(["chia", "netspace"], stdout=subprocess.PIPE, text=True)
         if "Connection Failure" in netspace.stdout:
+            logging.info("Failed to get netspace: %s", netspace.stdout)
             return
-        matches = re.findall(r'\d+\.\d+TB', netspace.stdout)
+        matches = re.findall(r'\d+\.\d+TiB', netspace.stdout)
         if len(matches) < 1:
+            logging.info("Failed to get netspace match: %s", netspace.stdout)
             return
+        tib = float(matches[0].strip('TiB'))
+        gib = tib * 1024
+        mib = gib * 1024
+        kib = mib * 1024
+        b = kib * 1024
+        logging.info("Received: %dTiB %dB", tib, b)
+
         yield GaugeMetricFamily(
-            'chia_node_netspace_terabytes',
-            value=matches[0].strip('TB'))
+            'chia_node_netspace_bytes',
+            'The Chia Netspace in Bytes',
+            value=int(b))
 
 def main():
     logging.getLogger().setLevel(20)
