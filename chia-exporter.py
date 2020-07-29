@@ -33,7 +33,7 @@ class ChiaCollector(object):
             mib = gib * 1024
             kib = mib * 1024
             b = kib * 1024
-            logging.info("Received: %dTiB %dB", tib, b)
+            logging.debug("Received: %dTiB %dB", tib, b)
 
             yield GaugeMetricFamily(
                 'chia_node_netspace_bytes',
@@ -60,5 +60,5 @@ if __name__ == '__main__':
     try:
         main(args)
     except KeyboardInterrupt:
-        print("\n") # Most terminals print a Ctrl+C message as well. Looks ugly with our log.
-        logging.info("Ctrl+C, bye!")
+        print("\n")
+        logging.info("Shutting down")
